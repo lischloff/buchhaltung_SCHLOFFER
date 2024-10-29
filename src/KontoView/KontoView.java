@@ -2,12 +2,16 @@
 // Author: Schloffer Lisa
 // Date: 23.10.2024
 
+
 package KontoView;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
 
 public class KontoView {
-    private JPanel panel1;
+    // GUI-Komponenten
+    public JPanel panel1;
     private JTable ein_ausgabe;
     private JLabel eingabe;
     private JLabel zahlungsartLabel;
@@ -20,11 +24,24 @@ public class KontoView {
     private JRadioButton einnahmeRadioButton;
     private JRadioButton ausgabeRadioButton;
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("KontoView");
-        frame.setContentPane(new KontoView().panel1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
+    public KontoView() {
+        // Initialisiere die JTable mit Spaltennamen
+        ein_ausgabe.setModel(new DefaultTableModel(new Object[]{"ID", "Kategorie-ID", "Datum", "Zusatzinfo", "Betrag"}, 0));
+    }
+
+    public void updateTableData(List<Object[]> data) {
+        DefaultTableModel model = (DefaultTableModel) ein_ausgabe.getModel();
+        model.setRowCount(0); // Vorherige Daten löschen
+
+        // Debugging-Ausgabe
+        System.out.println("Tabellenaktualisierung gestartet. Anzahl der Zeilen: " + data.size());
+
+        // Neue Daten in die Tabelle einfügen
+        for (Object[] row : data) {
+            model.addRow(row);
+        }
+
+        // Bestätigungsausgabe
+        System.out.println("Tabellenaktualisierung abgeschlossen.");
     }
 }

@@ -2,91 +2,75 @@
 // Author: Schloffer Lisa
 // Date: 23.10.2024
 
+import KontoView.KontoView;
+
+import javax.swing.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     private static Connection connect = null;
-    private static Statement statement = null;
-    private static PreparedStatement preparedStatement = null;
-    private static ResultSet resultSet = null;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
-            // This will load the MySQL driver, each DB has its own driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            // Setup the connection with the DB
-            connect = DriverManager
-                    .getConnection("jdbc:mysql://localhost/konten_db", "root", "");
+            // GUI erstellen
+            KontoView view = new KontoView();
 
-            // Fetching data from kostenkategorie table
-            System.out.println("Kostenkategorien:");
-            statement = connect.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM kostenkategorie");
-            writeKostenkategorieResultSet(resultSet);
+            // Daten aus der Datenbank holen und in der GUI anzeigen
+            List<Object[]> data = fetchDataFromDatabase();
+            view.updateTableData(data);
 
-            // Fetching data from Buchung table
-            System.out.println("\nBuchungen:");
-            resultSet = statement.executeQuery("SELECT * FROM Buchung");
-            writeBuchungResultSet(resultSet);
+            // GUI in einem JFrame anzeigen
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame("KontoView");
+                frame.setContentPane(view.panel1); // Zugriff auf panel1
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.pack();
+                frame.setSize(600, 400); // Festlegen einer Standardgröße
+                frame.setVisible(true);
+            });
 
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            close();
-        }
-    }
-
-    private static void writeKostenkategorieResultSet(ResultSet resultSet) throws SQLException {
-        // ResultSet for kostenkategorie table
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            String bezeichnung = resultSet.getString("bezeichnung");
-            String kurzbeschreibung = resultSet.getString("kurzbeschreibung");
-            int ein_ausgabe = resultSet.getInt("ein_ausgabe");
-
-            System.out.println("ID: " + id);
-            System.out.println("bezeichnung: " + bezeichnung);
-            System.out.println("kurzbeschreibung: " + kurzbeschreibung);
-            System.out.println("Ein/Ausgabe: " + (ein_ausgabe == 1 ? "Eingabe" : "Ausgabe"));
-            System.out.println("------------------");
-        }
-    }
-
-    private static void writeBuchungResultSet(ResultSet resultSet) throws SQLException {
-        // ResultSet for Buchung table
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            int kategorieId = resultSet.getInt("kategorie_id");
-            Timestamp datum = resultSet.getTimestamp("datum");
-            String zusatzinfo = resultSet.getString("zusatzinfo");
-            double betrag = resultSet.getDouble("Betrag");
-
-            System.out.println("Buchungs-ID: " + id);
-            System.out.println("Kategorie-ID: " + kategorieId);
-            System.out.println("Datum: " + datum);
-            System.out.println("Zusatzinfo: " + zusatzinfo);
-            System.out.println("Betrag: " + betrag);
-            System.out.println("------------------");
-        }
-    }
-
-    // You need to close the resultSet
-    private static void close() {
-        try {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-
-            if (statement != null) {
-                statement.close();
-            }
-
-            if (connect != null) {
-                connect.close();
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private static List<Object[]> fetchDataFromDatabase() throws SQLException {
+        List<Object[]> data = new ArrayList<>();
+        try {
+            // Verbindung zur MySQL-Datenbank herstellen
+            connect = DriverManager.getConnection("jdbc:mysql://localhost/konten_db", "root", "");
+            System.out.println("Datenbankverbindung erfolgreich."); // Debugging-Ausgabe
+
+            // Datenabfrage durchführen
+            Statement statement = connect.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM Buchung");
+
+            // Zeilenweise Daten in Liste einfügen
+            while (resultSet.next()) {
+                Object[] row = {
+                        resultSet.getInt("id"),
+                        resultSet.getInt("kategorie_id"),
+                        resultSet.getTimestamp("datum"),
+                        resultSet.getString("zusatzinfo"),
+                        resultSet.getDouble("betrag")
+                };
+                data.add(row);
+            }
+
+            // Ausgabe der Anzahl der geladenen Datensätze
+            System.out.println("Geladene Datensätze: " + data.size());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Verbindung schließen
+            if (connect != null) {
+                connect.close();
+            }
+        }
+        return data;
     }
 }
