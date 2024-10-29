@@ -23,7 +23,7 @@
       </component>
       <component id="40900" class="javax.swing.JTable" binding="ein_ausgabe">
         <constraints>
-          <grid row="1" column="0" row-span="9" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="1" column="0" row-span="8" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>
           </grid>
         </constraints>
@@ -148,6 +148,14 @@
         </constraints>
         <properties>
           <text value="Ausgabe"/>
+        </properties>
+      </component>
+      <component id="8de7" class="javax.swing.JButton" binding="filterBnt">
+        <constraints>
+          <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Filtern"/>
         </properties>
       </component>
     </children>
