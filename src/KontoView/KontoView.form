@@ -73,14 +73,6 @@
           <text value="Einnahme oder Ausgabe?"/>
         </properties>
       </component>
-      <component id="620bd" class="javax.swing.JButton" binding="saveBtn">
-        <constraints>
-          <grid row="9" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Speichern"/>
-        </properties>
-      </component>
       <component id="e9994" class="javax.swing.JLabel" binding="eingabe">
         <constraints>
           <grid row="0" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -107,9 +99,6 @@
             <item value="Gehalt"/>
             <item value="Stromkosten"/>
             <item value="Einnahmen aus Verkäufen"/>
-            <item value="Wartung"/>
-            <item value="Beratung"/>
-            <item value="Zinsen"/>
             <item value="Werbung"/>
             <item value="Steuererstattung"/>
             <item value="Softwarelizenzen"/>
@@ -156,6 +145,22 @@
         </constraints>
         <properties>
           <text value="Filtern"/>
+        </properties>
+      </component>
+      <component id="620bd" class="javax.swing.JButton" binding="saveBtn">
+        <constraints>
+          <grid row="9" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Speichern"/>
+        </properties>
+      </component>
+      <component id="fd846" class="javax.swing.JButton" binding="deleteBtn">
+        <constraints>
+          <grid row="9" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Löschen"/>
         </properties>
       </component>
     </children>
