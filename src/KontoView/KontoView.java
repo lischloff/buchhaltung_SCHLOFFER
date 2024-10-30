@@ -2,6 +2,8 @@ package KontoView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ public class KontoView {
     private JTable ein_ausgabe;
     private JLabel eingabe;
     private JLabel zahlungsartLabel;
-    private JComboBox zahlungsarten;
+    private JComboBox<String> zahlungsarten;  // Verwendung für Kategorien
     private JTextField bezeichnungFeld;
     private JTextField kurzbeschreibungField;
     private JLabel eingabe_oder_ausgabe;
@@ -21,28 +23,43 @@ public class KontoView {
     private JRadioButton ausgabeRadioButton;
     private JButton filterBnt;
 
-    // Datenbankverbindungsdetails
     private static final String DB_URL = "jdbc:mysql://localhost/konten_db";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
     public KontoView() {
-        // Initialisiere die JTable mit Spaltennamen und setze das Model
-        ein_ausgabe.setModel(new NonEditableTableModel(new Object[]{"ID", "Kategorie-ID", "Datum", "Zusatzinfo", "Betrag"}, 0));
-        ein_ausgabe.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Deaktiviert Mehrfachselektion
-        ein_ausgabe.setCellSelectionEnabled(false); // Deaktiviert Zellenselektion
-        ein_ausgabe.setRowSelectionAllowed(false); // Deaktiviert Reihenselektion
-        ein_ausgabe.setColumnSelectionAllowed(false); // Deaktiviert Spaltenselektion
+        initializeComponents();
+        updateTableData(fetchDataFromDatabase());
+        eingabe_oder_ausgabe.setText("Wählen Sie eine Option:");
+    }
 
-        // Daten aus der Datenbank abrufen und die Tabelle aktualisieren
-        List<Object[]> data = fetchDataFromDatabase();
-        updateTableData(data);
+    private void initializeComponents() {
+        initializeTable();
+        initializeCategoryComboBox();  // Initialisiert die Kategorien in der ComboBox zahlungsarten
+
+        saveBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveData();
+            }
+        });
+    }
+
+    private void initializeTable() {
+        ein_ausgabe.setModel(new NonEditableTableModel(new Object[]{"ID", "Kategorie", "Datum", "Zusatzinfo", "Betrag"}, 0));
+        ein_ausgabe.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
+
+    private void initializeCategoryComboBox() {
+        String[] kategorien = {"Miete", "Gehalt", "Stromkosten", "Einnahmen aus Verkäufen", "Wartung", "Beratung", "Zinsen", "Werbung", "Steuererstattung", "Softwarelizenzen"};
+        for (String kategorie : kategorien) {
+            zahlungsarten.addItem(kategorie);  // Kategorien zur ComboBox hinzufügen
+        }
     }
 
     public void updateTableData(List<Object[]> data) {
         DefaultTableModel model = (DefaultTableModel) ein_ausgabe.getModel();
-        model.setRowCount(0); // Vorherige Daten löschen
-        // Neue Daten in die Tabelle einfügen
+        model.setRowCount(0);
         for (Object[] row : data) {
             model.addRow(row);
         }
@@ -50,11 +67,10 @@ public class KontoView {
 
     private List<Object[]> fetchDataFromDatabase() {
         List<Object[]> data = new ArrayList<>();
-        try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
-            // Datenabfrage durchführen
-            Statement statement = connect.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM Buchung");
-            // Zeilenweise Daten in Liste einfügen
+        try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             Statement statement = connect.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM Buchung")) {
+
             while (resultSet.next()) {
                 Object[] row = {
                         resultSet.getInt("id"),
@@ -71,7 +87,42 @@ public class KontoView {
         return data;
     }
 
-    // Eine benutzerdefinierte Klasse für das nicht editierbare Modell
+    private void saveData() {
+        String bezeichnung = bezeichnungFeld.getText().trim();
+        String kurzbeschreibung = kurzbeschreibungField.getText().trim();
+        String betragText = betragField.getText().trim();
+
+        if (bezeichnung.isEmpty() || kurzbeschreibung.isEmpty() || betragText.isEmpty()) {
+            JOptionPane.showMessageDialog(panel1, "Bitte füllen Sie alle Felder aus.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double betrag;
+        try {
+            betrag = Double.parseDouble(betragText);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(panel1, "Der Betrag muss eine Zahl sein.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int kategorieId = zahlungsarten.getSelectedIndex() + 1;  // Auswahl in eine Kategorie-ID umwandeln
+
+        try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            String sql = "INSERT INTO Buchung (kategorie_id, datum, zusatzinfo, betrag) VALUES (?, NOW(), ?, ?)";
+            try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+                preparedStatement.setInt(1, kategorieId);
+                preparedStatement.setString(2, kurzbeschreibung);
+                preparedStatement.setDouble(3, betrag);
+                preparedStatement.executeUpdate();
+                JOptionPane.showMessageDialog(panel1, "Daten erfolgreich gespeichert.");
+                updateTableData(fetchDataFromDatabase());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(panel1, "Fehler beim Speichern der Daten: " + e.getMessage(), "Datenbankfehler", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private static class NonEditableTableModel extends DefaultTableModel {
         public NonEditableTableModel(Object[] columnNames, int rowCount) {
             super(columnNames, rowCount);
@@ -79,20 +130,18 @@ public class KontoView {
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            return false; // Keine Zelle ist editierbar
+            return false;
         }
     }
 
-    // Hauptmethode zum Starten der Anwendung
     public static void main(String[] args) {
-        // GUI in einem JFrame anzeigen
         javax.swing.SwingUtilities.invokeLater(() -> {
             KontoView view = new KontoView();
             JFrame frame = new JFrame("KontoView");
-            frame.setContentPane(view.panel1); // Zugriff auf panel1, da es jetzt 'public' ist
+            frame.setContentPane(view.panel1);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
-            frame.setSize(600, 400); // Festlegen einer Standardgröße
+            frame.setSize(600, 400);
             frame.setVisible(true);
         });
     }
