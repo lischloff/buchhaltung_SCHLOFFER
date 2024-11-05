@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="11a482b1-6bf2-4b42-b56e-12939614faf5" name="Changes" comment="Sixth Commit: Daten können erfolgreich gelöscht werden">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/KontoView/KontoView.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/KontoView/KontoView.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/KontoView/KontoView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/KontoView/KontoView.java" afterDir="false" />
-    </list>
+    <list default="true" id="11a482b1-6bf2-4b42-b56e-12939614faf5" name="Changes" comment="Seventh Commit: Daten können erfolgreich aktualisiert werden" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -120,7 +116,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730296792378</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Seventh Commit: Daten können erfolgreich aktualisiert werden">
+      <option name="closed" value="true" />
+      <created>1730790221804</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1730790221804</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -130,6 +134,7 @@
     <MESSAGE value="Fourth Commit: Daten werden im GUI angezeigt - Update" />
     <MESSAGE value="Fifth Commit: Daten werden erfolgreich gespeichert" />
     <MESSAGE value="Sixth Commit: Daten können erfolgreich gelöscht werden" />
-    <option name="LAST_COMMIT_MESSAGE" value="Sixth Commit: Daten können erfolgreich gelöscht werden" />
+    <MESSAGE value="Seventh Commit: Daten können erfolgreich aktualisiert werden" />
+    <option name="LAST_COMMIT_MESSAGE" value="Seventh Commit: Daten können erfolgreich aktualisiert werden" />
   </component>
 </project>

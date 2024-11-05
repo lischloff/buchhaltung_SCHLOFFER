@@ -19,7 +19,7 @@ public class KontoView {
     private JTable ein_ausgabe;
     private JLabel eingabe;
     private JLabel zahlungsartLabel;
-    private JComboBox<String> zahlungsarten;  // Dropdown zur Auswahl der Kategorien
+    private JComboBox<String> zahlungsarten;
     private JTextField bezeichnungFeld;
     private JTextField kurzbeschreibungField;
     private JLabel eingabe_oder_ausgabe;

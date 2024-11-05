@@ -25,3 +25,7 @@ Sixth Commit: Daten werden erfolgreich aus der DB gelöscht. Dafür habe ich ein
 ![image](https://github.com/user-attachments/assets/596547a7-cd40-43d8-aee3-d0b08d1c1c90)
 ![image](https://github.com/user-attachments/assets/832a4430-30da-42c8-a27c-360aeeb232db)
 ![image](https://github.com/user-attachments/assets/e5f9bbdb-cc67-42f2-bd55-1d610369a4cc)
+
+
+Seventh Commit: Daten können erfolgreich aktualisiert werden
+
