@@ -23,7 +23,7 @@
       </component>
       <component id="40900" class="javax.swing.JTable" binding="ein_ausgabe">
         <constraints>
-          <grid row="1" column="0" row-span="8" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="1" column="0" row-span="9" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>
           </grid>
         </constraints>
@@ -45,32 +45,14 @@
           <text value=""/>
         </properties>
       </component>
-      <component id="78ac" class="javax.swing.JTextField" binding="bezeichnungFeld">
+      <component id="78ac" class="javax.swing.JTextField" binding="zusatzinfoField">
         <constraints>
           <grid row="5" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
         <properties>
-          <text value="Bezeichnung"/>
-        </properties>
-      </component>
-      <component id="7bb40" class="javax.swing.JTextField" binding="kurzbeschreibungField">
-        <constraints>
-          <grid row="6" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value="Kurzbeschreibung"/>
-        </properties>
-      </component>
-      <component id="6aeab" class="javax.swing.JLabel" binding="eingabe_oder_ausgabe">
-        <constraints>
-          <grid row="7" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Einnahme oder Ausgabe?"/>
+          <text value="Zusatzinfo"/>
         </properties>
       </component>
       <component id="e9994" class="javax.swing.JLabel" binding="eingabe">
@@ -123,9 +105,17 @@
           <text value="Betrag"/>
         </properties>
       </component>
+      <component id="6aeab" class="javax.swing.JLabel" binding="eingabe_oder_ausgabe">
+        <constraints>
+          <grid row="6" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Einnahme oder Ausgabe?"/>
+        </properties>
+      </component>
       <component id="89ee2" class="javax.swing.JRadioButton" binding="einnahmeRadioButton" default-binding="true">
         <constraints>
-          <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Einnahme"/>
@@ -133,31 +123,15 @@
       </component>
       <component id="c511b" class="javax.swing.JRadioButton" binding="ausgabeRadioButton" default-binding="true">
         <constraints>
-          <grid row="8" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Ausgabe"/>
         </properties>
       </component>
-      <component id="8de7" class="javax.swing.JButton" binding="filterBnt">
-        <constraints>
-          <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Filtern"/>
-        </properties>
-      </component>
-      <component id="620bd" class="javax.swing.JButton" binding="saveBtn">
-        <constraints>
-          <grid row="9" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Speichern"/>
-        </properties>
-      </component>
       <component id="fd846" class="javax.swing.JButton" binding="deleteBtn">
         <constraints>
-          <grid row="9" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Löschen"/>
@@ -165,10 +139,18 @@
       </component>
       <component id="881d9" class="javax.swing.JButton" binding="updateBtn">
         <constraints>
-          <grid row="9" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Aktualisieren"/>
+        </properties>
+      </component>
+      <component id="620bd" class="javax.swing.JButton" binding="saveBtn">
+        <constraints>
+          <grid row="8" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Speichern"/>
         </properties>
       </component>
     </children>

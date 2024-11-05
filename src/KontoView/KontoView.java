@@ -11,11 +11,10 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class KontoView {
@@ -24,14 +23,12 @@ public class KontoView {
     private JLabel eingabe;
     private JLabel zahlungsartLabel;
     private JComboBox<String> zahlungsarten;
-    private JTextField bezeichnungFeld;
-    private JTextField kurzbeschreibungField;
+    private JTextField zusatzinfoField;
     private JLabel eingabe_oder_ausgabe;
     private JButton saveBtn;
     private JTextField betragField;
     private JRadioButton einnahmeRadioButton;
     private JRadioButton ausgabeRadioButton;
-    private JButton filterBnt;
     private JButton deleteBtn;
     private JButton updateBtn;
 
@@ -110,11 +107,12 @@ public class KontoView {
         try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              Statement statement = connect.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM Buchung")) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // Format für Datum
             while (resultSet.next()) {
                 Object[] row = {
                         resultSet.getInt("ID"),
                         resultSet.getInt("Kategorie_ID"),
-                        resultSet.getTimestamp("Datum"),
+                        dateFormat.format(resultSet.getTimestamp("Datum")), // Datum formatieren
                         resultSet.getString("Zusatzinfo"),
                         resultSet.getDouble("Betrag")
                 };
@@ -136,8 +134,8 @@ public class KontoView {
             double betrag = (double) ein_ausgabe.getValueAt(row, 4);
 
             // Datum aus der Tabelle holen und in LocalDate konvertieren
-            Date datum = (Date) ein_ausgabe.getValueAt(row, 2);
-            LocalDateTime entryDate = datum.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            String datumString = (String) ein_ausgabe.getValueAt(row, 2);
+            LocalDate entryDate = LocalDate.parse(datumString.split(" ")[0]);
 
             // Aktuelles Datum holen
             LocalDate currentDate = LocalDate.now();
@@ -145,7 +143,7 @@ public class KontoView {
             // Prüfen, ob das Datum des Eintrags mit dem heutigen Datum übereinstimmt
             if (entryDate.equals(currentDate)) {
                 zahlungsarten.setSelectedIndex(kategorieId);  // Kategorie in ComboBox auswählen
-                kurzbeschreibungField.setText(zusatzinfo);    // Zusatzinfo ins Textfeld
+                zusatzinfoField.setText(zusatzinfo);    // Zusatzinfo ins Textfeld
                 betragField.setText(String.valueOf(betrag));  // Betrag ins Textfeld
                 deleteBtn.setEnabled(true); // Löschen-Button aktivieren
                 updateBtn.setEnabled(true); // Aktualisieren-Button aktivieren
@@ -157,49 +155,6 @@ public class KontoView {
             }
         }
     }
-
-    // Speichert die eingegebenen Daten in der Datenbank
-    // Speichert die eingegebenen Daten in der Datenbank
-    private void saveData() {
-        String kurzbeschreibung = kurzbeschreibungField.getText().trim();
-        String betragText = betragField.getText().trim();
-
-        if (kurzbeschreibung.isEmpty() || betragText.isEmpty()) {
-            JOptionPane.showMessageDialog(panel1, "Bitte füllen Sie alle Felder aus.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        double betrag;
-        try {
-            betrag = Double.parseDouble(betragText); // Betrag als Zahl parsen
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(panel1, "Der Betrag muss eine Zahl sein.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int kategorieId = zahlungsarten.getSelectedIndex() + 1;
-
-        // Aktuellen Zeitpunkt holen
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
-            String sql = "INSERT INTO Buchung (Kategorie_ID, Datum, Zusatzinfo, Betrag) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-                preparedStatement.setInt(1, kategorieId);
-                preparedStatement.setTimestamp(2, timestamp); // Timestamp anstelle von Date verwenden
-                preparedStatement.setString(3, kurzbeschreibung);
-                preparedStatement.setDouble(4, betrag);
-                preparedStatement.executeUpdate();
-                JOptionPane.showMessageDialog(panel1, "Eintrag erfolgreich gespeichert.");
-                updateTableData(fetchDataFromDatabase());
-                clearFields();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(panel1, "Fehler beim Speichern des Eintrags: " + e.getMessage(), "Datenbankfehler", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
 
     // Löscht den ausgewählten Eintrag in der Datenbank mit Bestätigung
     private void deleteData() {
@@ -233,17 +188,12 @@ public class KontoView {
         }
     }
 
-    // Aktualisiert den ausgewählten Eintrag in der Datenbank
-    private void updateData() {
-        if (selectedId == -1) {
-            JOptionPane.showMessageDialog(panel1, "Kein Eintrag ausgewählt.", "Fehler", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String kurzbeschreibung = kurzbeschreibungField.getText().trim();
+    // Speichert die eingegebenen Daten in der Datenbank
+    private void saveData() {
+        String zusatzinfo = zusatzinfoField.getText().trim(); // KurzbeschreibungField umbenannt
         String betragText = betragField.getText().trim();
 
-        if (kurzbeschreibung.isEmpty() || betragText.isEmpty()) {
+        if (zusatzinfo.isEmpty() || betragText.isEmpty()) {
             JOptionPane.showMessageDialog(panel1, "Bitte füllen Sie alle Felder aus.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -258,13 +208,63 @@ public class KontoView {
 
         int kategorieId = zahlungsarten.getSelectedIndex() + 1;
 
+        // Aktuellen Zeitpunkt holen
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
         try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
-            String sql = "UPDATE Buchung SET Kategorie_ID = ?, Zusatzinfo = ?, Betrag = ? WHERE ID = ?";
+            String sql = "INSERT INTO Buchung (Kategorie_ID, Datum, Zusatzinfo, Betrag) VALUES (?, ?, ?, ?)";
             try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
                 preparedStatement.setInt(1, kategorieId);
-                preparedStatement.setString(2, kurzbeschreibung);
-                preparedStatement.setDouble(3, betrag);
-                preparedStatement.setInt(4, selectedId);
+                preparedStatement.setTimestamp(2, timestamp); // Timestamp anstelle von Date verwenden
+                preparedStatement.setString(3, zusatzinfo); // Zusatzinfo speichern
+                preparedStatement.setDouble(4, betrag);
+                preparedStatement.executeUpdate();
+                JOptionPane.showMessageDialog(panel1, "Eintrag erfolgreich gespeichert.");
+                updateTableData(fetchDataFromDatabase());
+                clearFields();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(panel1, "Fehler beim Speichern des Eintrags: " + e.getMessage(), "Datenbankfehler", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Aktualisiert die Daten des ausgewählten Eintrags
+    private void updateData() {
+        if (selectedId == -1) {
+            JOptionPane.showMessageDialog(panel1, "Kein Eintrag ausgewählt.", "Fehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String zusatzinfo = zusatzinfoField.getText().trim(); // KurzbeschreibungField umbenannt
+        String betragText = betragField.getText().trim();
+
+        if (zusatzinfo.isEmpty() || betragText.isEmpty()) {
+            JOptionPane.showMessageDialog(panel1, "Bitte füllen Sie alle Felder aus.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double betrag;
+        try {
+            betrag = Double.parseDouble(betragText); // Betrag als Zahl parsen
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(panel1, "Der Betrag muss eine Zahl sein.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int kategorieId = zahlungsarten.getSelectedIndex() + 1;
+
+        // Aktuellen Zeitpunkt holen
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            String sql = "UPDATE Buchung SET Kategorie_ID = ?, Datum = ?, Zusatzinfo = ?, Betrag = ? WHERE ID = ?";
+            try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+                preparedStatement.setInt(1, kategorieId);
+                preparedStatement.setTimestamp(2, timestamp); // Timestamp anstelle von Date verwenden
+                preparedStatement.setString(3, zusatzinfo); // Zusatzinfo speichern
+                preparedStatement.setDouble(4, betrag);
+                preparedStatement.setInt(5, selectedId); // ID des aktualisierten Eintrags
                 preparedStatement.executeUpdate();
                 JOptionPane.showMessageDialog(panel1, "Eintrag erfolgreich aktualisiert.");
                 updateTableData(fetchDataFromDatabase());
@@ -276,17 +276,17 @@ public class KontoView {
         }
     }
 
-    // Leert die Eingabefelder und setzt selectedId zurück
+    // Leert alle Eingabefelder
     private void clearFields() {
-        bezeichnungFeld.setText("");
-        kurzbeschreibungField.setText("");
+        zusatzinfoField.setText(""); // KurzbeschreibungField umbenannt
         betragField.setText("");
-        selectedId = -1;
-        deleteBtn.setEnabled(false);
-        updateBtn.setEnabled(false);
+        zahlungsarten.setSelectedIndex(0); // Setze Auswahl auf den ersten Eintrag
+        selectedId = -1; // Zurücksetzen der ausgewählten ID
+        deleteBtn.setEnabled(false); // Löschen-Button deaktivieren
+        updateBtn.setEnabled(false); // Aktualisieren-Button deaktivieren
     }
 
-    // Benutzerdefiniertes TableModel, um Zellen nicht editierbar zu machen
+    // Benutzerdefinierte Tabelle, die nicht bearbeitet werden kann
     private static class NonEditableTableModel extends DefaultTableModel {
         public NonEditableTableModel(Object[] columnNames, int rowCount) {
             super(columnNames, rowCount);
@@ -294,20 +294,17 @@ public class KontoView {
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            return false;
+            return false; // Zellen sind nicht bearbeitbar
         }
     }
 
-    // Hauptprogramm zum Erstellen und Anzeigen des GUI-Fensters
+    // Hauptmethode für den Start der Anwendung
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            KontoView view = new KontoView();
-            JFrame frame = new JFrame("KontoView");
-            frame.setContentPane(view.panel1);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setSize(600, 400);
-            frame.setVisible(true);
-        });
+        JFrame frame = new JFrame("Buchhaltung");
+        frame.setContentPane(new KontoView().panel1);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 }
