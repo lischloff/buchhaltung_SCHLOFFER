@@ -18,4 +18,10 @@ Fifth Commit: Daten werden erfolgreich in der DB gespeichert.
 ![image](https://github.com/user-attachments/assets/20800232-c921-42cf-a2d4-3ca1a7fe6c70)
 ![image](https://github.com/user-attachments/assets/6e3f25f2-5772-44d1-a8f4-c78a3e4bd3d1)
 
+Sixth Commit: Daten werden erfolgreich aus der DB gelöscht. Dafür habe ich einen „Löschen“ Button der GUI hinzugefügt und diesen dann so angepasst, dass er nur bei der Auswahl eines Datensatzes klickbar ist. Und dann ging es darum, die Implementierung im Code hinzuzufügen, damit eben Daten gelöscht werden.
 
+![image](https://github.com/user-attachments/assets/2c23b130-10d5-4301-9cf4-f2e9c38cc95b)
+![image](https://github.com/user-attachments/assets/912ecb2d-049e-4d90-a7af-38d367d91616)
+![image](https://github.com/user-attachments/assets/596547a7-cd40-43d8-aee3-d0b08d1c1c90)
+![image](https://github.com/user-attachments/assets/832a4430-30da-42c8-a27c-360aeeb232db)
+![image](https://github.com/user-attachments/assets/e5f9bbdb-cc67-42f2-bd55-1d610369a4cc)
