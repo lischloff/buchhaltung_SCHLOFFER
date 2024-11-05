@@ -1,3 +1,7 @@
+// Project: Buchhaltung
+// Author: Schloffer Lisa
+// Date: 23.10.2024
+
 package KontoView;
 
 import javax.swing.*;
@@ -15,7 +19,7 @@ public class KontoView {
     private JTable ein_ausgabe;
     private JLabel eingabe;
     private JLabel zahlungsartLabel;
-    private JComboBox<String> zahlungsarten;  // Verwendung für Kategorien
+    private JComboBox<String> zahlungsarten;  // Dropdown zur Auswahl der Kategorien
     private JTextField bezeichnungFeld;
     private JTextField kurzbeschreibungField;
     private JLabel eingabe_oder_ausgabe;
@@ -25,12 +29,13 @@ public class KontoView {
     private JRadioButton ausgabeRadioButton;
     private JButton filterBnt;
     private JButton deleteBtn;
+    private JButton updateBtn;
 
     private static final String DB_URL = "jdbc:mysql://localhost/buchhaltung_db";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
-    private int selectedId = -1; // Speichert die ID des ausgewählten Eintrags
+    private int selectedId = -1; // Speichert die ID des aktuell ausgewählten Eintrags in der Tabelle
 
     public KontoView() {
         initializeComponents();
@@ -38,27 +43,45 @@ public class KontoView {
         eingabe_oder_ausgabe.setText("Wählen Sie eine Option:");
     }
 
+    // Initialisiert GUI-Komponenten und Aktionen
     private void initializeComponents() {
         initializeTable();
         initializeCategoryComboBox();
+
+        // Speichern-Button-Aktion
         saveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saveData();
             }
         });
+
+        // Löschen-Button-Aktion
         deleteBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 deleteData();
             }
         });
-        deleteBtn.setEnabled(false); // Deaktivieren des Buttons zu Beginn
+
+        // Update-Button-Aktion
+        updateBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateData();
+            }
+        });
+
+        deleteBtn.setEnabled(false); // Löschen-Button zu Beginn deaktiviert
+        updateBtn.setEnabled(false); // Aktualisieren-Button zu Beginn deaktiviert
     }
 
+    // Tabelle wird initialisiert, sodass nur eine Zeile auswählbar ist
     private void initializeTable() {
         ein_ausgabe.setModel(new NonEditableTableModel(new Object[]{"ID", "Kategorie", "Datum", "Zusatzinfo", "Betrag"}, 0));
         ein_ausgabe.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Listener für Zeilen-Auswahl in der Tabelle
         ein_ausgabe.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -69,6 +92,7 @@ public class KontoView {
         });
     }
 
+    // Initialisiert die Kategorienauswahl im Dropdown-Menü
     private void initializeCategoryComboBox() {
         String[] kategorien = {"Miete", "Gehalt", "Stromkosten", "Verkauf", "Werbung", "Steuererstattung", "Softwarelizenzen"};
         for (String kategorie : kategorien) {
@@ -76,6 +100,7 @@ public class KontoView {
         }
     }
 
+    // Aktualisiert die Daten in der Tabelle
     public void updateTableData(List<Object[]> data) {
         DefaultTableModel model = (DefaultTableModel) ein_ausgabe.getModel();
         model.setRowCount(0);
@@ -84,6 +109,7 @@ public class KontoView {
         }
     }
 
+    // Holt alle Buchungen aus der Datenbank und speichert sie in einer Liste
     private List<Object[]> fetchDataFromDatabase() {
         List<Object[]> data = new ArrayList<>();
         try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD);
@@ -105,6 +131,7 @@ public class KontoView {
         return data;
     }
 
+    // Lädt die Daten des ausgewählten Eintrags aus der Tabelle in die Eingabefelder
     private void loadSelectedData() {
         int row = ein_ausgabe.getSelectedRow();
         if (row != -1) {
@@ -116,9 +143,11 @@ public class KontoView {
             kurzbeschreibungField.setText(zusatzinfo);    // Zusatzinfo ins Textfeld
             betragField.setText(String.valueOf(betrag));  // Betrag ins Textfeld
             deleteBtn.setEnabled(true); // Löschen-Button aktivieren
+            updateBtn.setEnabled(true); // Aktualisieren-Button aktivieren
         }
     }
 
+    // Löscht den ausgewählten Eintrag in der Datenbank mit Bestätigung
     private void deleteData() {
         if (selectedId == -1) {
             JOptionPane.showMessageDialog(panel1, "Kein Eintrag ausgewählt.", "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -137,11 +166,11 @@ public class KontoView {
             try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
                 String sql = "DELETE FROM Buchung WHERE ID = ?";
                 try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-                    preparedStatement.setInt(1, selectedId);
+                    preparedStatement.setInt(1, selectedId); // Setzen der zu löschenden ID
                     preparedStatement.executeUpdate();
                     JOptionPane.showMessageDialog(panel1, "Eintrag erfolgreich gelöscht.");
-                    updateTableData(fetchDataFromDatabase());  // Tabelle nach dem Löschen aktualisieren
-                    clearFields();
+                    updateTableData(fetchDataFromDatabase());  // Aktualisiert die Tabelle nach dem Löschen
+                    clearFields(); // Löscht Eingabefelder
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -150,22 +179,69 @@ public class KontoView {
         }
     }
 
+    // Aktualisiert den ausgewählten Eintrag in der Datenbank
+    private void updateData() {
+        if (selectedId == -1) {
+            JOptionPane.showMessageDialog(panel1, "Kein Eintrag ausgewählt.", "Fehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String kurzbeschreibung = kurzbeschreibungField.getText().trim();
+        String betragText = betragField.getText().trim();
+
+        if (kurzbeschreibung.isEmpty() || betragText.isEmpty()) {
+            JOptionPane.showMessageDialog(panel1, "Bitte füllen Sie alle Felder aus.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double betrag;
+        try {
+            betrag = Double.parseDouble(betragText); // Betrag als Zahl parsen
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(panel1, "Der Betrag muss eine Zahl sein.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int kategorieId = zahlungsarten.getSelectedIndex() + 1;
+
+        try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            String sql = "UPDATE Buchung SET Kategorie_ID = ?, Zusatzinfo = ?, Betrag = ? WHERE ID = ?";
+            try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+                preparedStatement.setInt(1, kategorieId);
+                preparedStatement.setString(2, kurzbeschreibung);
+                preparedStatement.setDouble(3, betrag);
+                preparedStatement.setInt(4, selectedId); // Setzen der zu aktualisierenden ID
+                preparedStatement.executeUpdate();
+                JOptionPane.showMessageDialog(panel1, "Eintrag erfolgreich aktualisiert.");
+                updateTableData(fetchDataFromDatabase()); // Aktualisiert die Tabelle nach dem Update
+                clearFields(); // Leert die Eingabefelder und deaktiviert die Buttons
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(panel1, "Fehler beim Aktualisieren des Eintrags: " + e.getMessage(), "Datenbankfehler", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Leert die Eingabefelder und deaktiviert den Löschen- und Aktualisieren-Button
     private void clearFields() {
         zahlungsarten.setSelectedIndex(0);   // ComboBox zurücksetzen
         kurzbeschreibungField.setText("");   // Textfelder leeren
         betragField.setText("");
         deleteBtn.setEnabled(false);         // Löschen-Button deaktivieren
+        updateBtn.setEnabled(false);         // Aktualisieren-Button deaktivieren
         selectedId = -1;                     // Zurücksetzen der ausgewählten ID
     }
 
+    // Speichert einen neuen Eintrag in die Datenbank
     private void saveData() {
-        String bezeichnung = bezeichnungFeld.getText().trim();
         String kurzbeschreibung = kurzbeschreibungField.getText().trim();
         String betragText = betragField.getText().trim();
-        if (bezeichnung.isEmpty() || kurzbeschreibung.isEmpty() || betragText.isEmpty()) {
+
+        if (kurzbeschreibung.isEmpty() || betragText.isEmpty()) {
             JOptionPane.showMessageDialog(panel1, "Bitte füllen Sie alle Felder aus.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         double betrag;
         try {
             betrag = Double.parseDouble(betragText);
@@ -173,23 +249,27 @@ public class KontoView {
             JOptionPane.showMessageDialog(panel1, "Der Betrag muss eine Zahl sein.", "Eingabefehler", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         int kategorieId = zahlungsarten.getSelectedIndex() + 1;
+
         try (Connection connect = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
-            String sql = "INSERT INTO Buchung (Kategorie_ID, Datum, Zusatzinfo, Betrag) VALUES (?, NOW(), ?, ?)";
+            String sql = "INSERT INTO Buchung (Kategorie_ID, Zusatzinfo, Betrag) VALUES (?, ?, ?)";
             try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
                 preparedStatement.setInt(1, kategorieId);
                 preparedStatement.setString(2, kurzbeschreibung);
                 preparedStatement.setDouble(3, betrag);
                 preparedStatement.executeUpdate();
-                JOptionPane.showMessageDialog(panel1, "Daten erfolgreich gespeichert.");
-                updateTableData(fetchDataFromDatabase());
+                JOptionPane.showMessageDialog(panel1, "Eintrag erfolgreich gespeichert.");
+                updateTableData(fetchDataFromDatabase()); // Aktualisiert die Tabelle nach dem Einfügen
+                clearFields(); // Eingabefelder leeren
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(panel1, "Fehler beim Speichern der Daten: " + e.getMessage(), "Datenbankfehler", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(panel1, "Fehler beim Speichern des Eintrags: " + e.getMessage(), "Datenbankfehler", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // Tabelle mit nicht-editierbarem Modell
     private static class NonEditableTableModel extends DefaultTableModel {
         public NonEditableTableModel(Object[] columnNames, int rowCount) {
             super(columnNames, rowCount);
@@ -201,6 +281,7 @@ public class KontoView {
         }
     }
 
+    // Hauptprogramm zum Erstellen und Anzeigen des GUI-Fensters
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(() -> {
             KontoView view = new KontoView();
@@ -213,3 +294,4 @@ public class KontoView {
         });
     }
 }
+
