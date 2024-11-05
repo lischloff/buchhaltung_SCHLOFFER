@@ -33,3 +33,7 @@ Seventh Commit: Daten können erfolgreich aktualisiert werden
 ![image](https://github.com/user-attachments/assets/452db3e3-bca8-4d61-96f1-fd568db2c647)
 
 
+Eighth Commit: Nur noch aktuelle Datensätze (vom aktuellen Tag) können aktualisiert oder gelöscht werden
+
+![image](https://github.com/user-attachments/assets/f1845cd6-a16b-4d74-8544-e10f88c55f53)
+
