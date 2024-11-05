@@ -28,4 +28,8 @@ Sixth Commit: Daten werden erfolgreich aus der DB gelöscht. Dafür habe ich ein
 
 
 Seventh Commit: Daten können erfolgreich aktualisiert werden
+![image](https://github.com/user-attachments/assets/9ecf06a5-4319-4c81-aeca-172404bedbf1)
+![image](https://github.com/user-attachments/assets/882c304d-4f36-4744-b802-88c8d4ef050a)
+![image](https://github.com/user-attachments/assets/452db3e3-bca8-4d61-96f1-fd568db2c647)
+
 
