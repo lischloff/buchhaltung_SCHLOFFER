@@ -3,6 +3,7 @@ Lisa Schloffer
 
 LBS Eibiswald | 2aAPC | 11.09.2024
 
+## Commits des Codes
 
 First Commit: Verbindng zur Datenbank wurde hergestellt und die Daten werden erfolgreich geladen
 
@@ -59,7 +60,7 @@ Eighth Commit: Nur noch aktuelle Datensätze (vom aktuellen Tag) können aktuali
 Ninth Commit: Kleinere Probleme wurden gefixt und angepasst 
 
 
-##Unit-Tests:
+##  Unit-Tests:
 
 
 
