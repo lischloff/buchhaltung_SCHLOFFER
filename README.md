@@ -58,20 +58,3 @@ Eighth Commit: Nur noch aktuelle Datensätze (vom aktuellen Tag) können aktuali
 
 
 Ninth Commit: Kleinere Probleme wurden gefixt und angepasst 
-
-
-##  Unit-Tests:
-
-
-| Aktivität                | Erwartetes Ergebnis                                      | Erwartetes Ergebnis tritt ein | Ein anderes Ergebnis tritt ein                   | Tatsächliches Ergebnis       | Fehler                                           |
-|--------------------------|----------------------------------------------------------|-------------------------------|--------------------------------------------------|-------------------------------|--------------------------------------------------|
-| **saveData mit validem Input** | Eintrag wird erfolgreich gespeichert                   | Nein                           | Eingabefehler oder leere Felder                  | Eintrag wird in der Datenbank gespeichert und Tabelle aktualisiert | -                                               |
-| **saveData mit leerem Input**  | Fehlermeldung erscheint                              | Nein                             | Speichern erfolgt ohne Meldung                   | Fehlermeldung: „Bitte füllen Sie alle Felder aus.“  | Benutzer lässt Felder leer                       |
-| **saveData mit ungültigem Betrag** | Fehlermeldung erscheint                         | Nein                            | Speichern erfolgt trotz ungültigem Betrag        | Fehlermeldung: „Der Betrag muss eine Zahl sein.“    | Benutzer gibt Text statt Zahl im Betrag-Feld ein |
-| **updateData ohne Auswahl**    | Fehlermeldung erscheint                              | Nein                            | Aktualisierung erfolgt ohne Meldung              | Fehlermeldung: „Kein Eintrag ausgewählt.“          | Benutzer hat keinen Eintrag zum Bearbeiten ausgewählt |
-| **updateData mit Auswahl**     | Eintrag wird erfolgreich aktualisiert                | Nein                            | Aktualisierung erfolgt nicht                     | Eintrag wird aktualisiert und in Tabelle angezeigt  | -                                               |
-| **deleteData ohne Auswahl**    | Fehlermeldung erscheint                              | Nein                            | Löschung erfolgt ohne Auswahl                    | Fehlermeldung: „Kein Eintrag ausgewählt.“           | Benutzer versucht, ohne Auswahl einen Eintrag zu löschen |
-| **deleteData mit Auswahl und Bestätigung** | Eintrag wird erfolgreich gelöscht           | Nein                            | Löschung erfolgt nicht                           | Eintrag wird gelöscht und Tabelle aktualisiert      | -                                               |
-| **Einzelzeilenauswahl in Tabelle** | Nur eine Zeile ist auswählbar                      | Nein                            | Mehrfachauswahl wird zugelassen                  | Nur Einzelzeilenauswahl möglich                   | -                                               |
-
-
